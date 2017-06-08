@@ -41,6 +41,9 @@ func (m *MiPush) Send(ctx context.Context, msg *Message, regID string) (*SendRes
 	if err != nil {
 		return nil, err
 	}
+	if result.Code != SUCC {
+		return &result, errors.New("push failed,please check return result")
+	}
 	return &result, nil
 }
 

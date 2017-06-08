@@ -48,6 +48,10 @@ var (
 	PostRetryTimes = 3
 )
 
+const (
+	SUCC = 0
+)
+
 // for future targeted push
 var (
 	BrandsMap = map[string]string{
