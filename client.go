@@ -20,11 +20,19 @@ type MiPush struct {
 	appSecret   string
 }
 
-func NewClient(appSecret string, packageName []string) *MiPush {
-	return &MiPush{
-		packageName: packageName,
-		host:        ProductionHost,
-		appSecret:   appSecret,
+func NewClient(appSecret string, packageName []string, isSandbox bool) *MiPush {
+	if isSandbox {
+		return &MiPush{
+			packageName: packageName,
+			host:        SandboxHost,
+			appSecret:   appSecret,
+		}
+	} else {
+		return &MiPush{
+			packageName: packageName,
+			host:        ProductionHost,
+			appSecret:   appSecret,
+		}
 	}
 }
 
@@ -645,7 +653,7 @@ tryAgain:
 		panic("xiaomi response is nil")
 	}
 	defer res.Body.Close()
-	fmt.Println("res.StatusCode=", res.StatusCode)
+	//fmt.Println("res.StatusCode=", res.StatusCode)
 	if res.StatusCode != http.StatusOK {
 		return nil, errors.New("network error")
 	}
