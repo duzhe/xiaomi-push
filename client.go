@@ -3,12 +3,13 @@ package xiaomipush
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+
+	log "github.com/golang/glog"
 
 	"golang.org/x/net/context"
 	"golang.org/x/net/context/ctxhttp"
@@ -20,12 +21,21 @@ type MiPush struct {
 	appSecret   string
 }
 
-func NewClient(appSecret string, packageName []string, isSandbox bool) *MiPush {
+func NewClient(appSecret string, packageName []string, isSandbox bool, iOS bool) *MiPush {
 	if isSandbox {
-		return &MiPush{
-			packageName: packageName,
-			host:        SandboxHost,
-			appSecret:   appSecret,
+		if iOS { //iOS的测试环境用sandbox
+			return &MiPush{
+				packageName: packageName,
+				host:        SandboxHost,
+				appSecret:   appSecret,
+			}
+		} else { //android 的测试环境无法用
+			return &MiPush{
+				packageName: packageName,
+				host:        ProductionHost,
+				appSecret:   appSecret,
+			}
+
 		}
 	} else {
 		return &MiPush{
@@ -631,13 +641,15 @@ func (m *MiPush) doPost(ctx context.Context, url string, form url.Values) ([]byt
 		panic(err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
+	//req.Header.Set("X-PUSH-HOST-LIST", "true")
 	req.Header.Set("Authorization", "key="+m.appSecret)
 	client := &http.Client{}
 	tryTime := 0
 tryAgain:
 	res, err = ctxhttp.Do(ctx, client, req)
+	log.Info(res)
 	if err != nil {
-		fmt.Println("xiaomi push post err:", err, tryTime)
+		log.Info("xiaomi push post err:", err, tryTime)
 		select {
 		case <-ctx.Done():
 			return nil, err
@@ -657,6 +669,11 @@ tryAgain:
 	if res.StatusCode != http.StatusOK {
 		return nil, errors.New("network error")
 	}
+	/**
+	if res.Header.Get("X-Push-Host-List") != "" {
+		hostSwitch := getHostSwitch()
+		hostSwitch.init(res.Header.Get("X-Push-Host-List"))
+	}*/
 	result, err = ioutil.ReadAll(res.Body)
 	if err != nil {
 		return nil, err

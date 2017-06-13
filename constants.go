@@ -46,7 +46,8 @@ const (
 )
 
 var (
-	PostRetryTimes = 3
+	PostRetryTimes            = 3
+	RefreshServerHostInterval = int64(5 * 60)
 )
 
 const (
