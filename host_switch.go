@@ -8,7 +8,10 @@ import (
 	"time"
 )
 
-var hostSwitch HostSwitch
+var hostSwitch = HostSwitch{
+	lastRefreshTime: time.Now(),
+}
+
 var once sync.Once
 
 type Server struct {
@@ -109,14 +112,4 @@ func (this HostSwitch) selectServer() Server {
 		}
 	}
 	return this.defaultServer
-}
-
-func getHostSwitch() HostSwitch {
-	once.Do(func() {
-		hostSwitch = HostSwitch{
-			lastRefreshTime: time.Now(),
-		}
-	})
-
-	return hostSwitch
 }

@@ -641,7 +641,10 @@ func (m *MiPush) doPost(ctx context.Context, url string, form url.Values) ([]byt
 		panic(err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-	//req.Header.Set("X-PUSH-HOST-LIST", "true")
+	/**
+	if hostSwitch.needRefresh() {
+		req.Header.Set("X-PUSH-HOST-LIST", "true")
+	}*/
 	req.Header.Set("Authorization", "key="+m.appSecret)
 	client := &http.Client{}
 	tryTime := 0
@@ -671,7 +674,6 @@ tryAgain:
 	}
 	/**
 	if res.Header.Get("X-Push-Host-List") != "" {
-		hostSwitch := getHostSwitch()
 		hostSwitch.init(res.Header.Get("X-Push-Host-List"))
 	}*/
 	result, err = ioutil.ReadAll(res.Body)
