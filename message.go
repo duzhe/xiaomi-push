@@ -160,6 +160,20 @@ func NewIOSMessage(description string) *Message {
 	}
 }
 
+func NewIOSMessageWithTitle(title, description string) *Message {
+	return &Message{
+		Payload:     "",
+		Title:       title,
+		Description: description,
+		PassThrough: 0,
+		NotifyType:  -1, // default notify type
+		TimeToLive:  0,
+		TimeToSend:  0,
+		NotifyID:    0,
+		Extra:       make(map[string]string),
+	}
+}
+
 // 可选项，自定义通知数字角标。
 func (i *Message) SetBadge(badge int64) *Message {
 	i.Extra["badge"] = strconv.FormatInt(badge, 10)

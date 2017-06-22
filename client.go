@@ -50,6 +50,7 @@ func NewClient(appSecret string, packageName []string, isSandbox bool, iOS bool)
 // 根据registrationId，发送消息到指定设备上
 func (m *MiPush) Send(ctx context.Context, msg *Message, regID string) (*SendResult, error) {
 	params := m.assembleSendParams(msg, regID)
+	log.Info(params)
 	bytes, err := m.doPost(ctx, m.host+RegURL, params)
 	if err != nil {
 		return nil, err
@@ -650,9 +651,9 @@ func (m *MiPush) doPost(ctx context.Context, url string, form url.Values) ([]byt
 	tryTime := 0
 tryAgain:
 	res, err = ctxhttp.Do(ctx, client, req)
-	log.Info(res)
+	//log.Info(res)
 	if err != nil {
-		log.Info("xiaomi push post err:", err, tryTime)
+		log.Info("xiaomi push post err:", err, tryTime, res)
 		select {
 		case <-ctx.Done():
 			return nil, err
