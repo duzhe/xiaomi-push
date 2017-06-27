@@ -50,7 +50,6 @@ func NewClient(appSecret string, packageName []string, isSandbox bool, iOS bool)
 // 根据registrationId，发送消息到指定设备上
 func (m *MiPush) Send(ctx context.Context, msg *Message, regID string) (*SendResult, error) {
 	params := m.assembleSendParams(msg, regID)
-	log.Info(params)
 	bytes, err := m.doPost(ctx, m.host+RegURL, params)
 	if err != nil {
 		return nil, err
