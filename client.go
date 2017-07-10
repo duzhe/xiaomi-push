@@ -19,6 +19,7 @@ type MiPush struct {
 	packageName []string
 	host        string
 	appSecret   string
+	ios         bool
 }
 
 func NewClient(appSecret string, packageName []string, isSandbox bool, iOS bool) *MiPush {
@@ -28,20 +29,22 @@ func NewClient(appSecret string, packageName []string, isSandbox bool, iOS bool)
 				packageName: packageName,
 				host:        SandboxHost,
 				appSecret:   appSecret,
+				ios:         iOS,
 			}
 		} else { //android 的测试环境无法用
 			return &MiPush{
 				packageName: packageName,
 				host:        ProductionHost,
 				appSecret:   appSecret,
+				ios:         iOS,
 			}
-
 		}
 	} else {
 		return &MiPush{
 			packageName: packageName,
 			host:        ProductionHost,
 			appSecret:   appSecret,
+			ios:         iOS,
 		}
 	}
 }
@@ -467,6 +470,10 @@ func (m *MiPush) GetTopicsOfRegID(ctx context.Context, regID string) (*TopicsOfR
 func (m *MiPush) assembleSendParams(msg *Message, regID string) url.Values {
 	form := m.defaultForm(msg)
 	form.Add("registration_id", regID)
+	if m.ios && msg.Title != "" {
+		form.Add("aps_proper_fields.title", msg.Title)
+		form.Add("aps_proper_fields.body", msg.Description)
+	}
 	return form
 }
 
