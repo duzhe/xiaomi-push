@@ -470,10 +470,6 @@ func (m *MiPush) GetTopicsOfRegID(ctx context.Context, regID string) (*TopicsOfR
 func (m *MiPush) assembleSendParams(msg *Message, regID string) url.Values {
 	form := m.defaultForm(msg)
 	form.Add("registration_id", regID)
-	if m.ios && msg.Title != "" {
-		form.Add("aps_proper_fields.title", msg.Title)
-		form.Add("aps_proper_fields.body", msg.Description)
-	}
 	return form
 }
 
@@ -747,6 +743,10 @@ func (m *MiPush) defaultForm(msg *Message) url.Values {
 		for k, v := range msg.Extra {
 			form.Add("extra."+k, v)
 		}
+	}
+	if m.ios && len(msg.Title) > 0 {
+		form.Add("aps_proper_fields.title", msg.Title)
+		form.Add("aps_proper_fields.body", msg.Description)
 	}
 	return form
 }
